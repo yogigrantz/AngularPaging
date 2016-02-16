@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script type="text/javascript">
+        // ***********************
+        // Paging Routine
+        // ***********************
+
+        var totalRecCount = $scope.DataFactory.userCount;
+        var recsPerpage = 10;
+        $scope.nbrPages = (totalRecCount % recsPerpage == 0) ? totalRecCount / recsPerpage : parseInt(totalRecCount / recsPerpage) + 1;
+
+        $scope.page = function (curPage) {
+
+            if (isNaN(curPage)) {
+                if (curPage == '... ') {
+                    if ($scope.currentPage >= 5) {
+                        $scope.currentPage++;
+                    }
+                    else {
+                        $scope.currentPage = 6;
+                    }
+                }
+                else if (curPage == '...') {
+                    $scope.currentPage--;
+                }
+                else {
+                    return;
+                };
+            }
+            else {
+                $scope.currentPage = parseInt(curPage);
+            }
+
+            $scope.goToPage = $scope.currentPage;
+
+            retrieveDataFromEndPoint($scope.currentPage, recsPerpage)
+
+            if ($scope.nbrPages > 5) {
+                if ($scope.currentPage < 5) {
+                    $scope.pageArray = ['1', '2', '3', '4', '5', '... ', $scope.nbrPages.toString()];
+                }
+                else if ($scope.currentPage > ($scope.nbrPages - 5)) {
+                    $scope.pageArray = ['1', '...'];
+                    for (var i = $scope.nbrPages - 5; i <= $scope.nbrPages; i++) {
+                        $scope.pageArray.push(i.toString());
+                    };
+                }
+                else {
+                    $scope.pageArray = ['1', '...'];
+                    for (var i = ($scope.currentPage - 2) ; i <= ($scope.currentPage + 2) ; i++) {
+                        $scope.pageArray.push(i.toString());
+                    };
+                    $scope.pageArray.push('... ');
+                    $scope.pageArray.push($scope.nbrPages.toString());
+                };
+            }
+            else {
+                $scope.pageArray = [];
+                for (var i = 1; i <= $scope.nbrPages; i++) {
+                    $scope.pageArray.push(i.toString());
+                };
+            }
+        };
+
+        $scope.page(1);
+
+        // ***********************
+        // End Paging Routine        *
+        // ***********************
+    </script>
+</head>
+<body>
+
+    <nav>
+        <ul class="pagination">
+            <li ng-class="{active: (currentPage.toString() == p)}" ng-click="page(p)" ng-repeat="p in pageArray track by $index"><span class="pointer">{{p}}</span></li>
+            <li><span> Jump to Page</span></li>
+            <li><span class="pointer"><input class="certJumpToPage" ng-model="goToPage" ng-change="page(goToPage)" type="number" min="1" max="{{nbrPages}}" /></span></li>
+        </ul>
+    </nav>
+
+</body>
+</html>
