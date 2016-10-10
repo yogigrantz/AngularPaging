@@ -10,7 +10,7 @@
 
         var totalRecCount = $scope.DataFactory.userCount;
         var recsPerpage = 10;
-        $scope.nbrPages = (totalRecCount % recsPerpage == 0) ? totalRecCount / recsPerpage : parseInt(totalRecCount / recsPerpage) + 1;
+        $scope.nbrPages = 1;
 
         $scope.page = function (curPage) {
 
@@ -40,10 +40,7 @@
     
         };
 
-        $scope.page(1);
-
         retrieveDataFromEndPoint = function(pg, pp) {
-            
             
         apiFactory({
                        method: 'POST',
@@ -84,7 +81,8 @@
                 });
         };
         
-        
+         $scope.page(1);
+
         // ***********************
         // End Paging Routine        *
         // ***********************
