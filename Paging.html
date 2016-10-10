@@ -37,36 +37,54 @@
             $scope.goToPage = $scope.currentPage;
 
             retrieveDataFromEndPoint($scope.currentPage, recsPerpage)
-
-            if ($scope.nbrPages > 5) {
-                if ($scope.currentPage < 5) {
-                    $scope.pageArray = ['1', '2', '3', '4', '5', '... ', $scope.nbrPages.toString()];
-                }
-                else if ($scope.currentPage > ($scope.nbrPages - 5)) {
-                    $scope.pageArray = ['1', '...'];
-                    for (var i = $scope.nbrPages - 5; i <= $scope.nbrPages; i++) {
-                        $scope.pageArray.push(i.toString());
-                    };
-                }
-                else {
-                    $scope.pageArray = ['1', '...'];
-                    for (var i = ($scope.currentPage - 2) ; i <= ($scope.currentPage + 2) ; i++) {
-                        $scope.pageArray.push(i.toString());
-                    };
-                    $scope.pageArray.push('... ');
-                    $scope.pageArray.push($scope.nbrPages.toString());
-                };
-            }
-            else {
-                $scope.pageArray = [];
-                for (var i = 1; i <= $scope.nbrPages; i++) {
-                    $scope.pageArray.push(i.toString());
-                };
-            }
+    
         };
 
         $scope.page(1);
 
+        retrieveDataFromEndPoint = function(pg, pp) {
+            
+            
+        apiFactory({
+                       method: 'POST',
+                       url: baseUrl + '/api/endPoint',
+                       data: '=' + JSON.stringify({ rpp: $scope.rpp, page: pg, inv: $scope.invNbr, transactionId: $scope.transactionId, token: userInfoCookie }),
+                       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }
+                   }).then(function (result) {            
+            
+                    $scope.recordsArray = result.Data.records;
+                    $scope.nbrRecords = result.Data.NbrRecords;
+  			        $scope.nbrPages = ($scope.nbrRecords % pp == 0) ? $scope.nbrRecords / pp : parseInt($scope.nbrRecords / pp) + 1;
+          
+            
+                    if ($scope.nbrPages > 5) {
+                        if ($scope.currentPage < 5) {
+                            $scope.pageArray = ['1', '2', '3', '4', '5', '... ', $scope.nbrPages.toString()];
+                        }
+                        else if ($scope.currentPage > ($scope.nbrPages - 5)) {
+                            $scope.pageArray = ['1', '...'];
+                            for (var i = $scope.nbrPages - 5; i <= $scope.nbrPages; i++) {
+                                $scope.pageArray.push(i.toString());
+                            };
+                        }
+                        else {
+                            $scope.pageArray = ['1', '...'];
+                            for (var i = ($scope.currentPage - 2) ; i <= ($scope.currentPage + 2) ; i++) {
+                                $scope.pageArray.push(i.toString());
+                            };
+                            $scope.pageArray.push('... ');
+                            $scope.pageArray.push($scope.nbrPages.toString());
+                        };
+                    }
+                    else {
+                        $scope.pageArray = [];
+                        for (var i = 1; i <= $scope.nbrPages; i++) 
+                            $scope.pageArray.push(i.toString());
+                     };
+                });
+        };
+        
+        
         // ***********************
         // End Paging Routine        *
         // ***********************
